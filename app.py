@@ -218,7 +218,7 @@ def download_clickpost():
             for li in o["lineItems"]["edges"]
         )
         w.writerow([
-            clean_zip(a.get("zip", "")),
+            '="' + clean_zip(a.get("zip", "")) + '"',
             (a.get("lastName") or "") + (a.get("firstName") or ""),
             PREF.get(a.get("province", ""), a.get("province", "")),
             a.get("city", ""),
