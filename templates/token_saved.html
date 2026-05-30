@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>セットアップ完了</title>
+<script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" data-api-key="{{ api_key }}"></script>
+<style>
+:root{color-scheme:light}
+body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f5f7fa;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.box{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1);padding:32px;max-width:560px;width:100%}
+h1{font-size:18px;margin-bottom:16px}
+.token-box{background:#1a1a2e;color:#7ec8e3;font-family:monospace;font-size:12px;padding:14px;border-radius:8px;word-break:break-all;margin:12px 0}
+.step{margin-bottom:10px;font-size:13px;line-height:1.6}
+.step strong{color:#2F5496}
+.note{font-size:12px;color:#888;margin-top:16px;padding:10px;background:#fffbf0;border-radius:6px;border-left:3px solid #f6ad55}
+.btn{display:inline-block;margin-top:16px;padding:10px 20px;background:#2F5496;color:#fff;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>✅ 認証成功！あと1ステップ</h1>
+  <p class="step">以下のアクセストークンをコピーして、<strong>Render の Environment Variables</strong> に設定してください。</p>
+  <div class="token-box">SHOPIFY_ACCESS_TOKEN={{ token }}</div>
+  <div class="step">📋 設定場所: Render ダッシュボード → あなたのサービス → <strong>Environment</strong> タブ → <strong>Add Environment Variable</strong></div>
+  <div class="step">設定後、「<strong>Manual Deploy</strong>」でサービスを再起動してください。</div>
+  <div class="note">⚠️ このトークンは一度しか表示されません。必ずコピーしてから移動してください。</div>
+  <a class="btn" href="/?shop={{ shop }}">アプリを開く</a>
+</div>
+</body>
+</html>
