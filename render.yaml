@@ -3,7 +3,7 @@ services:
     name: shokki-order-tool
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorm app:app
+    startCommand: gunicorn app:app --limit-request-line 8190
     envVars:
       - key: SHOPIFY_API_KEY
         sync: false
