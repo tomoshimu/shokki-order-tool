@@ -213,8 +213,8 @@ def download_clickpost():
     token = get_token(shop) or session.get("token", "")
     data = graphql(shop, token, ORDERS_GQL.format(count=count))
     filter_products = [p.strip() for p in products.split(",") if p.strip()] if products else []
-    COLS = ["お届け先郵便番号","お届け先氏名","お届け先住所1(都道府県)","お届け先住所2(市区町村)",
-            "お届け先住所3(番地)","お届け先住所4(建物名等)","お届け先電話番号","内容品名","重量(g)"]
+    COLS = ["お届け先郵便番号","お届け先氏名","お届け先敬称","お届け先住所1行目","お届け先住所2行目",
+            "お届け先住所3行目","お届け先住所4行目","内容品"]
     out = io.StringIO()
     w = csv.writer(out)
     w.writerow(COLS)
@@ -228,12 +228,12 @@ def download_clickpost():
         w.writerow([
             '="' + clean_zip(a.get("zip", "")) + '"',
             (a.get("lastName") or "") + (a.get("firstName") or ""),
+            "様",
             PREF.get(a.get("province", ""), a.get("province", "")),
             a.get("city", ""),
             a.get("address1", ""),
             a.get("address2") or "",
-            clean_phone(a.get("phone", "")),
-            items, "",
+            items,
         ])
     from datetime import date
     filename = f"クリックポスト_{date.today()}.csv"
