@@ -11,7 +11,6 @@ SCOPES     = "read_orders"
 # ---------- Shopify接続 ----------
 
 def get_token(shop):
-    """ショップのアクセストークンを返す（環境変数優先）"""
     return os.environ.get("SHOPIFY_ACCESS_TOKEN", "")
 
 def graphql(shop, token, query):
@@ -103,14 +102,9 @@ def auth_callback():
         "client_id": API_KEY, "client_secret": API_SECRET, "code": code,
     })
     token = r.json().get("access_token", "")
-    # 取得したトークンをログに出力 → Renderの環境変数に手動設定する
     print(f"\n{'='*60}")
-    print(f"✅ アクセストークン取得成功！")
-    print(f"ショップ: {shop}")
     print(f"SHOPIFY_ACCESS_TOKEN={token}")
-    print(f"👉 RenderのEnvironment Variablesにこの値を設定してください")
     print(f"{'='*60}\n")
-    # 今回のリクエストだけ使えるようにセッションに保存
     session["token"] = token
     session["shop"] = shop
     return render_template("token_saved.html", token=token, shop=shop, api_key=API_KEY)
@@ -124,26 +118,20 @@ def get_orders_data(shop, token, count):
     seen_keys = set(OPTION_KEYS)
     for edge in data["data"]["orders"]["edges"]:
         o = edge["node"]
-        titles = []
-        merged_attrs = {}
+        # 1商品 = 1行
         for li in o["lineItems"]["edges"]:
             item = li["node"]
-            titles.append(f"{item['title']}×{item['quantity']}")
             attrs = {a["key"].strip(): a["value"] for a in item["customAttributes"]}
-            for k, v in attrs.items():
+            for k in attrs:
                 if k not in seen_keys:
                     seen_keys.add(k)
                     extra_keys.append(k)
-                if k in merged_attrs:
-                    merged_attrs[k] = merged_attrs[k] + " / " + v
-                else:
-                    merged_attrs[k] = v
-        rows.append({
-            "order": o["name"],
-            "date": o["createdAt"][:10],
-            "title": " / ".join(titles),
-            "attrs": merged_attrs,
-        })
+            rows.append({
+                "order": o["name"],
+                "date": o["createdAt"][:10],
+                "title": f"{item['title']}×{item['quantity']}",
+                "attrs": attrs,
+            })
     return rows, extra_keys
 
 @app.route("/api/orders")
