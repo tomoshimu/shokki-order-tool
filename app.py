@@ -11,6 +11,7 @@ SCOPES     = "read_orders"
 # ---------- Shopify接続 ----------
 
 def get_token(shop):
+    """ショップのアクセストークンを返す（環境変数優先）"""
     return os.environ.get("SHOPIFY_ACCESS_TOKEN", "")
 
 def graphql(shop, token, query):
@@ -58,7 +59,7 @@ PREF = {
     "Miyazaki":"宮崎県","Kagoshima":"鹿児島県","Okinawa":"沖縄県",
 }
 
-def clean_zip(z): return (z or "").replace("-", "")
+def clean_zip(z):   return (z or "").replace("-", "").zfill(7)
 def clean_phone(p):
     p = (p or "").replace("+81", "0").replace("-", "").replace(" ", "")
     return p
@@ -103,7 +104,10 @@ def auth_callback():
     })
     token = r.json().get("access_token", "")
     print(f"\n{'='*60}")
+    print(f"✅ アクセストークン取得成功！")
+    print(f"ショップ: {shop}")
     print(f"SHOPIFY_ACCESS_TOKEN={token}")
+    print(f"👆 RenderのEnvironment Variablesにこの値を設定してください")
     print(f"{'='*60}\n")
     session["token"] = token
     session["shop"] = shop
@@ -118,7 +122,6 @@ def get_orders_data(shop, token, count):
     seen_keys = set(OPTION_KEYS)
     for edge in data["data"]["orders"]["edges"]:
         o = edge["node"]
-        # 1商品 = 1行
         for li in o["lineItems"]["edges"]:
             item = li["node"]
             attrs = {a["key"].strip(): a["value"] for a in item["customAttributes"]}
@@ -129,14 +132,15 @@ def get_orders_data(shop, token, count):
             rows.append({
                 "order": o["name"],
                 "date": o["createdAt"][:10],
-                "title": f"{item['title']}×{item['quantity']}",
+                "title": item["title"],
+                "qty": item["quantity"],
                 "attrs": attrs,
             })
     return rows, extra_keys
 
 @app.route("/api/orders")
 def api_orders():
-    shop = request.args.get("shop", "")
+    shop  = request.args.get("shop", "")
     count = request.args.get("count", "50")
     token = get_token(shop) or session.get("token", "")
     rows, extra_keys = get_orders_data(shop, token, count)
@@ -144,11 +148,11 @@ def api_orders():
 
 @app.route("/api/clickpost")
 def api_clickpost():
-    shop = request.args.get("shop", "")
+    shop  = request.args.get("shop", "")
     count = request.args.get("count", "50")
     token = get_token(shop) or session.get("token", "")
-    data = graphql(shop, token, ORDERS_GQL.format(count=count))
-    rows = []
+    data  = graphql(shop, token, ORDERS_GQL.format(count=count))
+    rows  = []
     for edge in data["data"]["orders"]["edges"]:
         o = edge["node"]
         a = o.get("shippingAddress") or {}
@@ -157,10 +161,10 @@ def api_clickpost():
             for li in o["lineItems"]["edges"]
         )
         rows.append({
-            "zip": clean_zip(a.get("zip", "")),
-            "name": (a.get("lastName") or "") + (a.get("firstName") or ""),
-            "pref": PREF.get(a.get("province", ""), a.get("province", "")),
-            "city": a.get("city", ""),
+            "zip":   clean_zip(a.get("zip", "")),
+            "name":  (a.get("lastName") or "") + (a.get("firstName") or ""),
+            "pref":  PREF.get(a.get("province", ""), a.get("province", "")),
+            "city":  a.get("city", ""),
             "addr1": a.get("address1", ""),
             "addr2": a.get("address2") or "",
             "phone": clean_phone(a.get("phone", "")),
@@ -172,17 +176,17 @@ def api_clickpost():
 
 @app.route("/download/orders")
 def download_orders():
-    shop = request.args.get("shop", "")
+    shop  = request.args.get("shop", "")
     count = request.args.get("count", "50")
     token = get_token(shop) or session.get("token", "")
     rows, extra_keys = get_orders_data(shop, token, count)
-    cols = ["注文番号","注文日","商品名（数量）"] + OPTION_KEYS + extra_keys
-    out = io.StringIO()
-    w = csv.writer(out)
+    cols  = ["注文番号","注文日","商品名","数量"] + OPTION_KEYS + extra_keys
+    out   = io.StringIO()
+    w     = csv.writer(out)
     w.writerow(cols)
     for r in rows:
         w.writerow([
-            r["order"], r["date"], r["title"],
+            r["order"], r["date"], r["title"], r["qty"],
             *[r["attrs"].get(k, "") for k in OPTION_KEYS + extra_keys],
         ])
     from datetime import date
@@ -195,33 +199,36 @@ def download_orders():
 
 @app.route("/download/clickpost")
 def download_clickpost():
-    shop = request.args.get("shop", "")
-    count = request.args.get("count", "50")
+    shop     = request.args.get("shop", "")
+    count    = request.args.get("count", "50")
     products = request.args.get("products", "")
-    token = get_token(shop) or session.get("token", "")
-    data = graphql(shop, token, ORDERS_GQL.format(count=count))
+    token    = get_token(shop) or session.get("token", "")
+    data     = graphql(shop, token, ORDERS_GQL.format(count=count))
     filter_products = [p.strip() for p in products.split(",") if p.strip()] if products else []
-    COLS = ["お届け先郵便番号","お届け先氏名","お届け先敬称","お届け先住所1行目","お届け先住所2行目",
-            "お届け先住所3行目","お届け先住所4行目","内容品"]
-    out = io.StringIO()
-    w = csv.writer(out)
+    COLS  = ["お届け先郵便番号","お届け先氏名","お届け先住所1(都道府県)","お届け先住所2(市区町村)",
+             "お届け先住所3(番地)","お届け先住所4(建物名等)","お届け先電話番号","内容品","重量(g)"]
+    out   = io.StringIO()
+    w     = csv.writer(out)
     w.writerow(COLS)
     for edge in data["data"]["orders"]["edges"]:
         o = edge["node"]
         a = o.get("shippingAddress") or {}
+        line_titles = [li["node"]["title"] for li in o["lineItems"]["edges"]]
+        if filter_products and not any(t in filter_products for t in line_titles):
+            continue
         items = "／".join(
             f"{li['node']['title']}×{li['node']['quantity']}"
             for li in o["lineItems"]["edges"]
         )
         w.writerow([
-            '="' + clean_zip(a.get("zip", "")) + '"',
+            clean_zip(a.get("zip", "")),
             (a.get("lastName") or "") + (a.get("firstName") or ""),
-            "様",
             PREF.get(a.get("province", ""), a.get("province", "")),
             a.get("city", ""),
             a.get("address1", ""),
             a.get("address2") or "",
-            items,
+            clean_phone(a.get("phone", "")),
+            items, "",
         ])
     from datetime import date
     filename = f"クリックポスト_{date.today()}.csv"
