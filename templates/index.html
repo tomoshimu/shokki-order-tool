@@ -198,8 +198,9 @@ function renderCp() {
     return selected.some(sel => products.includes(sel));
   });
 
+  // 郵便番号はgridjs.html()でHTMLとして返すことで数値変換を防ぐ
   const cols = [
-    { name: "郵便番号", formatter: (cell) => String(cell ?? "").padStart(7, "0") },
+    { name: "郵便番号", formatter: (cell) => gridjs.html(`<span>${String(cell ?? "").padStart(7, "0")}</span>`) },
     "氏名","都道府県","市区町村","番地","建物名","電話番号","内容品"
   ];
   renderGrid("cp-grid", "cp-card", cols, filtered.map(r => [r.zip,r.name,r.pref,r.city,r.addr1,r.addr2,r.phone,r.items]));
