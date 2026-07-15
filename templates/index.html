@@ -51,61 +51,61 @@ select{padding:7px 10px;border:1px solid #d0d5dd;border-radius:7px;font-size:12p
 </head>
 <body>
 <div class="layout">
-<div class="sidebar">
-<div class="logo">食器配 注文ツール<small>Shopify連携</small></div>
-<nav>
-<a href="#" class="active" onclick="return showPage('orders',this)">🧵 未発送 注文データ</a>
-<a href="#" onclick="return showPage('cp',this)">📮 クリックポスト</a>
-</nav>
-</div>
+  <div class="sidebar">
+    <div class="logo">食器配 注文ツール<small>Shopify連携</small></div>
+    <nav>
+      <a href="#" class="active" onclick="return showPage('orders',this)">🧵 未発送 注文データ</a>
+      <a href="#" onclick="return showPage('cp',this)">📮 クリックポスト</a>
+    </nav>
+  </div>
 
-<div class="main">
+  <div class="main">
 
-<!-- 未発送注文データ -->
-<div id="page-orders" class="page active">
-<div class="top">
-<div>
-<h2>未発送 注文データ</h2>
-<div class="updated" id="orders-updated">未取得</div>
-</div>
-<div class="controls">
-<select id="orders-count"><option value="50">50件</option><option value="100">100件</option><option value="250">250件</option></select>
-<button class="btn blue" id="orders-fetch" onclick="loadOrders()">📥 データ取得</button>
-<a class="btn green disabled" id="orders-dl" href="#">⬇️ CSV保存</a>
-</div>
-</div>
-<div id="orders-status" class="status">「データ取得」を押してください</div>
-<div class="card" id="orders-card" style="display:none"><div id="orders-grid"></div></div>
-</div>
+    <!-- 未発送注文データ -->
+    <div id="page-orders" class="page active">
+      <div class="top">
+        <div>
+          <h2>未発送 注文データ</h2>
+          <div class="updated" id="orders-updated">未取得</div>
+        </div>
+        <div class="controls">
+          <select id="orders-count"><option value="50">50件</option><option value="100">100件</option><option value="250">250件</option></select>
+          <button class="btn blue" id="orders-fetch" onclick="loadOrders()">📥 データ取得</button>
+          <a class="btn green disabled" id="orders-dl" href="#">⬇️ CSV保存</a>
+        </div>
+      </div>
+      <div id="orders-status" class="status">「データ取得」を押してください</div>
+      <div class="card" id="orders-card" style="display:none"><div id="orders-grid"></div></div>
+    </div>
 
-<!-- クリックポスト -->
-<div id="page-cp" class="page">
-<div class="top">
-<div>
-<h2>クリックポスト 発送データ</h2>
-<div class="updated" id="cp-updated">未取得</div>
-</div>
-<div class="controls">
-<select id="cp-count"><option value="50">50件</option><option value="100">100件</option><option value="250">250件</option></select>
-<button class="btn rust" id="cp-fetch" onclick="loadCP()">📥 データ取得</button>
-<a class="btn green disabled" id="cp-dl" href="#">⬇️ CSV保存</a>
-</div>
-</div>
-<div id="cp-status" class="status">「データ取得」を押してください</div>
-<div id="cp-filter" class="filter-box" style="display:none">
-<div class="filter-title">
-<span>🔍 商品で絞り込み</span>
-<span class="filter-summary" id="cp-filter-summary"></span>
-</div>
-<div class="filter-items" id="cp-filter-items"></div>
-</div>
-<div class="card" id="cp-card" style="display:none">
-<div id="cp-grid"></div>
-<div class="note">⚠️ 重量欄は空欄です。クリックポスト管理画面でご確認の上アップロードしてください。</div>
-</div>
-</div>
+    <!-- クリックポスト -->
+    <div id="page-cp" class="page">
+      <div class="top">
+        <div>
+          <h2>クリックポスト 発送データ</h2>
+          <div class="updated" id="cp-updated">未取得</div>
+        </div>
+        <div class="controls">
+          <select id="cp-count"><option value="50">50件</option><option value="100">100件</option><option value="250">250件</option></select>
+          <button class="btn rust" id="cp-fetch" onclick="loadCP()">📥 データ取得</button>
+          <a class="btn green disabled" id="cp-dl" href="#">⬇️ CSV保存</a>
+        </div>
+      </div>
+      <div id="cp-status" class="status">「データ取得」を押してください</div>
+      <div id="cp-filter" class="filter-box" style="display:none">
+        <div class="filter-title">
+          <span>🔍 商品で絞り込み</span>
+          <span class="filter-summary" id="cp-filter-summary"></span>
+        </div>
+        <div class="filter-items" id="cp-filter-items"></div>
+      </div>
+      <div class="card" id="cp-card" style="display:none">
+        <div id="cp-grid"></div>
+        <div class="note">⚠️ 重量欄は空欄です。クリックポスト管理画面でご確認の上アップロードしてください。</div>
+      </div>
+    </div>
 
-</div>
+  </div>
 </div>
 
 <script>
@@ -113,35 +113,35 @@ const SHOP = "{{ shop }}";
 const OPTS = ["トップス／ロンパース","ロゴカラー","サイズ","サイズ調整","胸囲","袖丈","着丈","発送方法","備考欄"];
 
 function showPage(id, el) {
-document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-document.querySelectorAll("nav a").forEach(a => a.classList.remove("active"));
-document.getElementById("page-" + id).classList.add("active");
-el.classList.add("active");
-return false;
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll("nav a").forEach(a => a.classList.remove("active"));
+  document.getElementById("page-" + id).classList.add("active");
+  el.classList.add("active");
+  return false;
 }
 
 // --- 注文データ ---
 async function loadOrders() {
-const count = document.getElementById("orders-count").value;
-const btn = document.getElementById("orders-fetch");
-const st = document.getElementById("orders-status");
-btn.disabled = true;
-st.className = "status loading"; st.textContent = "📡 Shopifyからデータ取得中...";
-try {
-const res = await fetch(`/api/orders?shop=${SHOP}&count=${count}`);
-if (!res.ok) throw new Error(await res.text());
-const { rows, extra_keys } = await res.json();
-const cols = ["注文番号","注文日","商品（数量）", ...OPTS, ...extra_keys];
-renderGrid("orders-grid", "orders-card", cols, rows.map(r =>
-cols.map(c => c==="注文番号"?r.order : c==="注文日"?r.date : c==="商品（数量）"?r.title : (r.attrs[c]||""))
-));
-const dl = document.getElementById("orders-dl");
-dl.href = `/download/orders?shop=${SHOP}&count=${count}`;
-dl.classList.remove("disabled");
-document.getElementById("orders-updated").textContent = "最終取得: " + new Date().toLocaleString("ja-JP");
-st.className = "status"; st.textContent = `✅ ${rows.length}件を取得`;
-} catch(e) { st.className = "status error"; st.textContent = "エラー: " + e.message; }
-btn.disabled = false;
+  const count = document.getElementById("orders-count").value;
+  const btn = document.getElementById("orders-fetch");
+  const st = document.getElementById("orders-status");
+  btn.disabled = true;
+  st.className = "status loading"; st.textContent = "📡 Shopifyからデータ取得中...";
+  try {
+    const res = await fetch(`/api/orders?shop=${SHOP}&count=${count}`);
+    if (!res.ok) throw new Error(await res.text());
+    const { rows, extra_keys } = await res.json();
+    const cols = ["注文番号","注文日","商品名","数量", ...OPTS, ...extra_keys];
+    renderGrid("orders-grid", "orders-card", cols, rows.map(r =>
+      cols.map(c => c==="注文番号"?r.order : c==="注文日"?r.date : c==="商品名"?r.title : c==="数量"?r.qty : (r.attrs[c]||""))
+    ));
+    const dl = document.getElementById("orders-dl");
+    dl.href = `/download/orders?shop=${SHOP}&count=${count}`;
+    dl.classList.remove("disabled");
+    document.getElementById("orders-updated").textContent = "最終取得: " + new Date().toLocaleString("ja-JP");
+    st.className = "status"; st.textContent = `✅ ${rows.length}行を取得`;
+  } catch(e) { st.className = "status error"; st.textContent = "エラー: " + e.message; }
+  btn.disabled = false;
 }
 
 // --- クリックポスト ---
@@ -149,76 +149,94 @@ let cpAllRows = [];
 let cpCount = "50";
 
 async function loadCP() {
-cpCount = document.getElementById("cp-count").value;
-const btn = document.getElementById("cp-fetch");
-const st = document.getElementById("cp-status");
-btn.disabled = true;
-st.className = "status loading"; st.textContent = "📡 Shopifyからデータ取得中...";
-try {
-const res = await fetch(`/api/clickpost?shop=${SHOP}&count=${cpCount}`);
-if (!res.ok) throw new Error(await res.text());
-cpAllRows = await res.json();
-buildCpFilter();
-renderCp();
-document.getElementById("cp-updated").textContent = "最終取得: " + new Date().toLocaleString("ja-JP");
-st.className = "status"; st.textContent = `✅ ${cpAllRows.length}件を取得`;
-} catch(e) { st.className = "status error"; st.textContent = "エラー: " + e.message; }
-btn.disabled = false;
+  cpCount = document.getElementById("cp-count").value;
+  const btn = document.getElementById("cp-fetch");
+  const st = document.getElementById("cp-status");
+  btn.disabled = true;
+  st.className = "status loading"; st.textContent = "📡 Shopifyからデータ取得中...";
+  try {
+    const res = await fetch(`/api/clickpost?shop=${SHOP}&count=${cpCount}`);
+    if (!res.ok) throw new Error(await res.text());
+    cpAllRows = await res.json();
+    buildCpFilter();
+    renderCp();
+    document.getElementById("cp-updated").textContent = "最終取得: " + new Date().toLocaleString("ja-JP");
+    st.className = "status"; st.textContent = `✅ ${cpAllRows.length}件を取得`;
+  } catch(e) { st.className = "status error"; st.textContent = "エラー: " + e.message; }
+  btn.disabled = false;
 }
 
 function extractProducts(items) {
-// "商品名×数量／商品名×数量" → 商品名リスト
-return items.split("／").map(s => s.replace(/×\d+$/, "").trim()).filter(Boolean);
+  return items.split("／").map(s => s.replace(/×\d+$/, "").trim()).filter(Boolean);
 }
 
 function buildCpFilter() {
-// ユニークな商品名を収集
-const allProducts = new Set();
-cpAllRows.forEach(r => extractProducts(r.items).forEach(p => allProducts.add(p)));
+  const allProducts = new Set();
+  cpAllRows.forEach(r => extractProducts(r.items).forEach(p => allProducts.add(p)));
 
-const container = document.getElementById("cp-filter-items");
-container.innerHTML = "";
-[...allProducts].sort().forEach(product => {
-const id = "cp-filter-" + btoa(unescape(encodeURIComponent(product))).slice(0,8);
-const label = document.createElement("label");
-label.className = "filter-chip";
-label.innerHTML = `<input type="checkbox" id="${id}" value="${product}" checked onchange="renderCp()"> ${product}`;
-container.appendChild(label);
-});
+  const container = document.getElementById("cp-filter-items");
+  container.innerHTML = "";
+  [...allProducts].sort().forEach(product => {
+    const id = "cp-filter-" + btoa(unescape(encodeURIComponent(product))).slice(0,8);
+    const label = document.createElement("label");
+    label.className = "filter-chip";
+    label.innerHTML = `<input type="checkbox" id="${id}" value="${product}" checked onchange="renderCp()"> ${product}`;
+    container.appendChild(label);
+  });
 
-document.getElementById("cp-filter").style.display = allProducts.size > 0 ? "block" : "none";
+  document.getElementById("cp-filter").style.display = allProducts.size > 0 ? "block" : "none";
 }
 
 function getSelectedProducts() {
-return [...document.querySelectorAll("#cp-filter-items input:checked")].map(el => el.value);
+  return [...document.querySelectorAll("#cp-filter-items input:checked")].map(el => el.value);
 }
 
 function renderCp() {
-const selected = getSelectedProducts();
-const filtered = cpAllRows.filter(r => {
-const products = extractProducts(r.items);
-return selected.some(sel => products.includes(sel));
-});
+  const selected = getSelectedProducts();
+  const filtered = cpAllRows.filter(r => {
+    const products = extractProducts(r.items);
+    return selected.some(sel => products.includes(sel));
+  });
 
-const cols = ["郵便番号","氏名","都道府県","市区町村","番地","建物名","電話番号","内容品"];
-renderGrid("cp-grid", "cp-card", cols, filtered.map(r => [r.zip,r.name,r.pref,r.city,r.addr1,r.addr2,r.phone,r.items]));
+  const cols = [
+    { name: "郵便番号", formatter: (cell) => String(cell ?? "").padStart(7, "0") },
+    "氏名","都道府県","市区町村","番地","建物名","電話番号","内容品"
+  ];
+  renderGrid("cp-grid", "cp-card", cols, filtered.map(r => [r.zip,r.name,r.pref,r.city,r.addr1,r.addr2,r.phone,r.items]));
 
-// CSV保存リンク更新（絞り込み済みデータをダウンロード）
-const dl = document.getElementById("cp-dl");
-const selectedParam = encodeURIComponent(selected.join(","));
-dl.href = `/download/clickpost?shop=${SHOP}&count=${cpCount}&products=${selectedParam}`;
-dl.classList.remove("disabled");
+  const dl = document.getElementById("cp-dl");
+  dl.onclick = (e) => { e.preventDefault(); downloadCpCsv(filtered); };
+  dl.href = "#";
+  dl.classList.remove("disabled");
 
-const summary = document.getElementById("cp-filter-summary");
-summary.textContent = filtered.length < cpAllRows.length ? `${filtered.length}/${cpAllRows.length}件` : "";
+  const summary = document.getElementById("cp-filter-summary");
+  summary.textContent = filtered.length < cpAllRows.length ? `${filtered.length}/${cpAllRows.length}件` : "";
+}
+
+function downloadCpCsv(filtered) {
+  const COLS = ["お届け先郵便番号","お届け先氏名","お届け先住所1(都道府県)","お届け先住所2(市区町村)",
+                "お届け先住所3(番地)","お届け先住所4(建物名等)","お届け先電話番号","内容品","重量(g)"];
+  const lines = [COLS.join(",")];
+  for (const r of filtered) {
+    const row = [String(r.zip ?? "").padStart(7,"0"), r.name, r.pref, r.city, r.addr1, r.addr2, r.phone, r.items, ""];
+    lines.push(row.map(v => {
+      const s = String(v ?? "").replace(/"/g, '""');
+      return /[,"\n]/.test(s) ? `"${s}"` : s;
+    }).join(","));
+  }
+  const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `クリックポスト_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
 }
 
 function renderGrid(gridId, cardId, cols, data) {
-const card = document.getElementById(cardId);
-card.style.display = "block";
-document.getElementById(gridId).innerHTML = "";
-new gridjs.Grid({ columns: cols, data, sort: true, search: true, pagination: { limit: 30 } })
-.render(document.getElementById(gridId));
+  const card = document.getElementById(cardId);
+  card.style.display = "block";
+  document.getElementById(gridId).innerHTML = "";
+  new gridjs.Grid({ columns: cols, data, sort: true, search: true, pagination: { limit: 30 } })
+    .render(document.getElementById(gridId));
 }
 </script>
 </body>
