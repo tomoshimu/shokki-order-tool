@@ -173,7 +173,6 @@ function extractProducts(items) {
 function buildCpFilter() {
   const allProducts = new Set();
   cpAllRows.forEach(r => extractProducts(r.items).forEach(p => allProducts.add(p)));
-
   const container = document.getElementById("cp-filter-items");
   container.innerHTML = "";
   [...allProducts].sort().forEach(product => {
@@ -183,7 +182,6 @@ function buildCpFilter() {
     label.innerHTML = `<input type="checkbox" id="${id}" value="${product}" checked onchange="renderCp()"> ${product}`;
     container.appendChild(label);
   });
-
   document.getElementById("cp-filter").style.display = allProducts.size > 0 ? "block" : "none";
 }
 
@@ -198,7 +196,6 @@ function renderCp() {
     return selected.some(sel => products.includes(sel));
   });
 
-  // 郵便番号はgridjs.html()でHTMLとして返すことで数値変換を防ぐ
   const cols = [
     { name: "郵便番号", formatter: (cell) => gridjs.html(`<span>${String(cell ?? "").padStart(7, "0")}</span>`) },
     "氏名","都道府県","市区町村","番地","建物名","電話番号","内容品"
@@ -215,11 +212,11 @@ function renderCp() {
 }
 
 function downloadCpCsv(filtered) {
-  const COLS = ["お届け先郵便番号","お届け先氏名","お届け先住所1(都道府県)","お届け先住所2(市区町村)",
-                "お届け先住所3(番地)","お届け先住所4(建物名等)","お届け先電話番号","内容品","重量(g)"];
+  const COLS = ["お届け先郵便番号","お届け先氏名","お届け先敬称","お届け先住所1行目","お届け先住所2行目",
+                "お届け先住所3行目","お届け先住所4行目","内容品"];
   const lines = [COLS.join(",")];
   for (const r of filtered) {
-    const row = [String(r.zip ?? "").padStart(7,"0"), r.name, r.pref, r.city, r.addr1, r.addr2, r.phone, r.items, ""];
+    const row = [String(r.zip ?? "").padStart(7,"0"), r.name, "様", r.pref, r.city, r.addr1, r.addr2, r.items];
     lines.push(row.map(v => {
       const s = String(v ?? "").replace(/"/g, '""');
       return /[,"\n]/.test(s) ? `"${s}"` : s;
