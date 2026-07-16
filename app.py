@@ -46,7 +46,7 @@ ORDERS_GQL = """
 OPTION_KEYS = ["トップス／ロンパース","ロゴカラー","サイズ","サイズ調整","胸囲","袖丈","着丈","発送方法","備考欄"]
 
 PREF = {
-    "Hokkaido":"北海道","Aomori":"青森県","Iwate":"岩手県","Miyagi":"宮城県","Akita":"秋田県",
+    "Hokkaido":"北海道","Hokkaidō":"北海道","Aomori":"青森県","Iwate":"岩手県","Miyagi":"宮城県","Akita":"秋田県",
     "Yamagata":"山形県","Fukushima":"福島県","Ibaraki":"茨城県","Tochigi":"栃木県","Gunma":"群馬県",
     "Saitama":"埼玉県","Chiba":"千葉県","Tōkyō":"東京都","Tokyo":"東京都","Kanagawa":"神奈川県",
     "Niigata":"新潟県","Toyama":"富山県","Ishikawa":"石川県","Fukui":"福井県","Yamanashi":"山梨県",
@@ -205,8 +205,8 @@ def download_clickpost():
     token    = get_token(shop) or session.get("token", "")
     data     = graphql(shop, token, ORDERS_GQL.format(count=count))
     filter_products = [p.strip() for p in products.split(",") if p.strip()] if products else []
-    COLS  = ["お届け先郵便番号","お届け先氏名","お届け先住所1(都道府県)","お届け先住所2(市区町村)",
-             "お届け先住所3(番地)","お届け先住所4(建物名等)","お届け先電話番号","内容品","重量(g)"]
+    COLS  = ["お届け先郵便番号","お届け先氏名","お届け先住所1行目","お届け先住所2行目",
+             "お届け先住所3行目","お届け先住所4行目","内容品"]
     out   = io.StringIO()
     w     = csv.writer(out)
     w.writerow(COLS)
@@ -227,8 +227,7 @@ def download_clickpost():
             a.get("city", ""),
             a.get("address1", ""),
             a.get("address2") or "",
-            clean_phone(a.get("phone", "")),
-            items, "",
+            items,
         ])
     from datetime import date
     filename = f"クリックポスト_{date.today()}.csv"
