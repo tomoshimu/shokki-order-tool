@@ -35,7 +35,7 @@ ORDERS_GQL = """
         createdAt
         shippingAddress {{ firstName lastName zip province city address1 address2 phone }}
         lineItems(first: 20) {{
-          edges {{ node {{ title quantity customAttributes {{ key value }} }} }}
+          edges {{ node {{ title quantity currentQuantity customAttributes {{ key value }} }} }}
         }}
       }}
     }}
@@ -129,7 +129,7 @@ def get_orders_data(shop, token, count):
                 if k not in seen_keys:
                     seen_keys.add(k)
                     extra_keys.append(k)
-            for _ in range(item["quantity"]):
+            for _ in range(item["currentQuantity"]):
                 rows.append({
                     "order": o["name"],
                     "date": o["createdAt"][:10],
