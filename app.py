@@ -28,7 +28,7 @@ def graphql(shop, token, query):
 
 ORDERS_GQL = """
 {{
-  orders(first: {count}, sortKey: CREATED_AT, reverse: true, query: "fulfillment_status:unfulfilled") {{
+  orders(first: {count}, sortKey: CREATED_AT, reverse: true, query: "fulfillment_status:unfulfilled status:open") {{
     edges {{
       node {{
         name
@@ -129,13 +129,13 @@ def get_orders_data(shop, token, count):
                 if k not in seen_keys:
                     seen_keys.add(k)
                     extra_keys.append(k)
-            rows.append({
-                "order": o["name"],
-                "date": o["createdAt"][:10],
-                "title": item["title"],
-                "qty": item["quantity"],
-                "attrs": attrs,
-            })
+            for _ in range(item["quantity"]):
+                rows.append({
+                    "order": o["name"],
+                    "date": o["createdAt"][:10],
+                    "title": item["title"],
+                    "attrs": attrs,
+                })
     return rows, extra_keys
 
 @app.route("/api/orders")
@@ -180,13 +180,13 @@ def download_orders():
     count = request.args.get("count", "50")
     token = get_token(shop) or session.get("token", "")
     rows, extra_keys = get_orders_data(shop, token, count)
-    cols  = ["注文番号","注文日","商品名","数量"] + OPTION_KEYS + extra_keys
+    cols  = ["注文番号","注文日","商品名"] + OPTION_KEYS + extra_keys
     out   = io.StringIO()
     w     = csv.writer(out)
     w.writerow(cols)
     for r in rows:
         w.writerow([
-            r["order"], r["date"], r["title"], r["qty"],
+            r["order"], r["date"], r["title"],
             *[r["attrs"].get(k, "") for k in OPTION_KEYS + extra_keys],
         ])
     from datetime import date
@@ -205,8 +205,8 @@ def download_clickpost():
     token    = get_token(shop) or session.get("token", "")
     data     = graphql(shop, token, ORDERS_GQL.format(count=count))
     filter_products = [p.strip() for p in products.split(",") if p.strip()] if products else []
-    COLS  = ["お届け先郵便番号","お届け先氏名","お届け先住所1行目","お届け先住所2行目",
-             "お届け先住所3行目","お届け先住所4行目","内容品"]
+    COLS  = ["お届け先郵便番号","お届け先氏名","お届け先住所1(都道府県)","お届け先住所2(市区町村)",
+             "お届け先住所3(番地)","お届け先住所4(建物名等)","お届け先電話番号","内容品","重量(g)"]
     out   = io.StringIO()
     w     = csv.writer(out)
     w.writerow(COLS)
@@ -227,7 +227,8 @@ def download_clickpost():
             a.get("city", ""),
             a.get("address1", ""),
             a.get("address2") or "",
-            items,
+            clean_phone(a.get("phone", "")),
+            items, "",
         ])
     from datetime import date
     filename = f"クリックポスト_{date.today()}.csv"
