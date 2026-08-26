@@ -63,7 +63,7 @@ CLICKPOST_GQL = """
 OPTION_KEYS = ["トップス／ロンパース","ロゴカラー","サイズ","サイズ調整","胸囲","袖丈","着丈","発送方法","備考欄"]
 
 PREF = {
-    "Hokkaido":"北海道","Horkaidō":"北海道","Aomori":"青森県","Iwate":"岩手県","Miyagi":"宮城県","Akita":"秋田県",
+    "Hokkaido":"北海道","Hokkaidō":"北海道","Aomori":"青森県","Iwate":"岩手県","Miyagi":"宮城県","Akita":"秋田県",
     "Yamagata":"山形県","Fukushima":"福島県","Ibaraki":"茨城県","Tochigi":"栃木県","Gunma":"群馬県",
     "Saitama":"埼玉県","Chiba":"千葉県","Tōkyō":"東京都","Tokyo":"東京都","Kanagawa":"神奈川県",
     "Niigata":"新潟県","Toyama":"富山県","Ishikawa":"石川県","Fukui":"福井県","Yamanashi":"山梨県",
@@ -126,7 +126,7 @@ def auth_callback():
     print(f"SHOPIFY_ACCESS_TOKEN={token}")
     print(f"👆 RenderのEnvironment Variablesにこの値を設定してください")
     print(f"{'='*60}\n")
-    session[token] = token
+    session["token"] = token
     session["shop"] = shop
     return render_template("token_saved.html", token=token, shop=shop, api_key=API_KEY)
 
