@@ -43,6 +43,40 @@ ORDERS_GQL = """
 }}
 """
 
+CLICKPOST_GQL = """
+{{
+  orders(first: {{count}}, sortKey: CREATED_AT, reverse: true, query: "fulfillment_status:unshipped status:open") {{
+    edges {{
+      node {{
+        name
+        createdAt
+        shippingAddress {{ firstName lastName zip province city address1 address2 phone }}
+        lineItems(first: 20) {{
+          edges {{ node {{ title quantity currentQuantity customAttributes {{ key value }} }} }}
+        }}
+      }}
+    }}
+  }}
+}}
+"""
+
+CLICKPOST_GQL = """
+{{
+  orders(first: {{count}}, sortKey: CREATED_AT, reverse: true, query: "fulfillment_status:unshipped status:open") {{
+    edges {{
+      node {{
+        name
+        createdAt
+        shippingAddress {{ firstName lastName zip province city address1 address2 phone }}
+        lineItems(first: 20) {{
+          edges {{ node {{ title quantity currentQuantity customAttributes {{ key value }} }} }}
+        }}
+      }}
+    }}
+  }}
+}}
+"""
+
 OPTION_KEYS = ["トップス／ロンパース","ロゴカラー","サイズ","サイズ調整","胸囲","袖丈","着丈","発送方法","備考欄"]
 
 PREF = {
@@ -151,7 +185,7 @@ def api_clickpost():
     shop  = request.args.get("shop", "")
     count = request.args.get("count", "50")
     token = get_token(shop) or session.get("token", "")
-    data  = graphql(shop, token, ORDERS_GQL.format(count=count))
+    data  = graphql(shop, token, CLICKPOST_GQL.format(count=count))
     rows  = []
     for edge in data["data"]["orders"]["edges"]:
         o = edge["node"]
@@ -203,7 +237,7 @@ def download_clickpost():
     count    = request.args.get("count", "50")
     products = request.args.get("products", "")
     token    = get_token(shop) or session.get("token", "")
-    data     = graphql(shop, token, ORDERS_GQL.format(count=count))
+    data     = graphql(shop, token, CLICKPOST_GQL.format(count=count))
     filter_products = [p.strip() for p in products.split(",") if p.strip()] if products else []
     COLS  = ["お届け先郵便番号","お届け先氏名","お届け先住所1(都道府県)","お届け先住所2(市区町村)",
              "お届け先住所3(番地)","お届け先住所4(建物名等)","お届け先電話番号","内容品","重量(g)"]
