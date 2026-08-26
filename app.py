@@ -45,7 +45,7 @@ ORDERS_GQL = """
 
 CLICKPOST_GQL = """
 {{
-  orders(first: {count}, sortKey: CREATED_AT, reverse: true, query: "fulfillment_status:unshipped status:open") {{
+  orders(first: {count}, sortKey: CREATED_AT, reverse: true, query: "status:open") {{
     edges {{
       node {{
         name
