@@ -44,7 +44,7 @@ ORDERS_GQL = """
 
 CLICKPOST_GQL = """
 {{
-  orders(first: {count}, sortKey: CREATED_AT, reverse: true) {{
+  orders(first: {count}, sortKey: CREATED_AT, reverse: true, query: "fulfillment_status:unfulfilled") {{
     edges {{
       node {{
         name
@@ -68,7 +68,7 @@ PREF = {
     "Saitama":"埼玉県","Chiba":"千葉県","Tōkyō":"東京都","Tokyo":"東京都","Kanagawa":"神奈川県",
     "Niigata":"新潟県","Toyama":"富山県","Ishikawa":"石川県","Fukui":"福井県","Yamanashi":"山梨県",
     "Nagano":"長野県","Gifu":"岐阜県","Shizuoka":"静岡県","Aichi":"愛知県","Mie":"三重県",
-    "Shiga":"滋賀県","Kyōto":"京都府","Kyoto":"京都府","Ösaka":"大阪府","Osaka":"大阪府",
+    "Shiga":"滋賀県","Kyōto":"京都府","Kyoto":"京都府","Ōsaka":"大阪府","Osaka":"大阪府",
     "Hyōgo":"兵庫県","Hyogo":"兵庫県","Nara":"奈良県","Wakayama":"和歌山県","Tottori":"鳥取県",
     "Shimane":"島根県","Okayama":"岡山県","Hiroshima":"広島県","Yamaguchi":"山口県","Tokushima":"徳島県",
     "Kagawa":"香川県","Ehime":"愛媛県","Kōchi":"高知県","Kochi":"高知県","Fukuoka":"福岡県",
@@ -126,7 +126,7 @@ def auth_callback():
     print(f"SHOPIFY_ACCESS_TOKEN={token}")
     print(f"👆 RenderのEnvironment Variablesにこの値を設定してください")
     print(f"{'='*60}\n")
-    session["token"] = token
+    session[token] = token
     session["shop"] = shop
     return render_template("token_saved.html", token=token, shop=shop, api_key=API_KEY)
 
