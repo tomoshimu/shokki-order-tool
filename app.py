@@ -11,7 +11,6 @@ SCOPES     = "read_orders"
 # ---------- Shopify接続 ----------
 
 def get_token(shop):
-    """ショップのアクセストークンを返す（環境変数優先）"""
     return os.environ.get("SHOPIFY_ACCESS_TOKEN", "")
 
 def graphql(shop, token, query):
@@ -60,28 +59,11 @@ CLICKPOST_GQL = """
 }}
 """
 
-CLICKPOST_GQL = """
-{{
-  orders(first: {{count}}, sortKey: CREATED_AT, reverse: true, query: "fulfillment_status:unshipped status:open") {{
-    edges {{
-      node {{
-        name
-        createdAt
-        shippingAddress {{ firstName lastName zip province city address1 address2 phone }}
-        lineItems(first: 20) {{
-          edges {{ node {{ title quantity currentQuantity customAttributes {{ key value }} }} }}
-        }}
-      }}
-    }}
-  }}
-}}
-"""
-
 OPTION_KEYS = ["トップス／ロンパース","ロゴカラー","サイズ","サイズ調整","胸囲","袖丈","着丈","発送方法","備考欄"]
 
 PREF = {
     "Hokkaido":"北海道","Hokkaidō":"北海道","Aomori":"青森県","Iwate":"岩手県","Miyagi":"宮城県","Akita":"秋田県",
-    "Yamagata":"山形県","Fukushima":"福島県","Ibaraki":"茨城県","Tochigi":"栃木県","Gunma":"群馬県",
+    "Yamagata":"山形県","Fukushima":"福島県","Ibaraki":"茨城県","Tochigi":"栃朤県","Gunma":"群馬県",
     "Saitama":"埼玉県","Chiba":"千葉県","Tōkyō":"東京都","Tokyo":"東京都","Kanagawa":"神奈川県",
     "Niigata":"新潟県","Toyama":"富山県","Ishikawa":"石川県","Fukui":"福井県","Yamanashi":"山梨県",
     "Nagano":"長野県","Gifu":"岐阜県","Shizuoka":"静岡県","Aichi":"愛知県","Mie":"三重県",
@@ -191,9 +173,12 @@ def api_clickpost():
         o = edge["node"]
         a = o.get("shippingAddress") or {}
         items = "／".join(
-            f"{li['node']['title']}×{li['node']['quantity']}"
+            f"{li['node']['title']}×{li['node']['currentQuantity']}"
             for li in o["lineItems"]["edges"]
+            if li["node"]["currentQuantity"] > 0
         )
+        if not items:
+            continue
         rows.append({
             "zip":   clean_zip(a.get("zip", "")),
             "name":  (a.get("lastName") or "") + (a.get("firstName") or ""),
@@ -247,12 +232,14 @@ def download_clickpost():
     for edge in data["data"]["orders"]["edges"]:
         o = edge["node"]
         a = o.get("shippingAddress") or {}
-        line_titles = [li["node"]["title"] for li in o["lineItems"]["edges"]]
-        if filter_products and not any(t in filter_products for t in line_titles):
+        line_items = [li["node"] for li in o["lineItems"]["edges"] if li["node"]["currentQuantity"] > 0]
+        if not line_items:
+            continue
+        if filter_products and not any(li["title"] in filter_products for li in line_items):
             continue
         items = "／".join(
-            f"{li['node']['title']}×{li['node']['quantity']}"
-            for li in o["lineItems"]["edges"]
+            f"{li['title']}×{li['currentQuantity']}"
+            for li in line_items
         )
         w.writerow([
             clean_zip(a.get("zip", "")),
