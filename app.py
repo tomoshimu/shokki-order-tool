@@ -52,7 +52,7 @@ CLICKPOST_GQL = """
         cancelledAt
         shippingAddress {{ firstName lastName zip province city address1 address2 phone }}
         lineItems(first: 20) {{
-          edges {{ node {{ title quantity currentQuantity fulfillableQuantity customAttributes {{ key value }} }} }}
+          edges {{ node {{ title quantity currentQuantity customAttributes {{ key value }} }} }}
         }}
       }}
     }}
@@ -63,12 +63,12 @@ CLICKPOST_GQL = """
 OPTION_KEYS = ["トップス／ロンパース","ロゴカラー","サイズ","サイズ調整","胸囲","袖丈","着丈","発送方法","備考欄"]
 
 PREF = {
-    "Hokkaido":"北海道","Hokkaidō":"北海道","Aomori":"青森県","Iwate":"岩手県","Miyagi":"宮城県","Akita":"秋田県",
+    "Hokkaido":"北海道","Horkaidō":"北海道","Aomori":"青森県","Iwate":"岩手県","Miyagi":"宮城県","Akita":"秋田県",
     "Yamagata":"山形県","Fukushima":"福島県","Ibaraki":"茨城県","Tochigi":"栃木県","Gunma":"群馬県",
     "Saitama":"埼玉県","Chiba":"千葉県","Tōkyō":"東京都","Tokyo":"東京都","Kanagawa":"神奈川県",
     "Niigata":"新潟県","Toyama":"富山県","Ishikawa":"石川県","Fukui":"福井県","Yamanashi":"山梨県",
     "Nagano":"長野県","Gifu":"岐阜県","Shizuoka":"静岡県","Aichi":"愛知県","Mie":"三重県",
-    "Shiga":"滋賀県","Kyōto":"京都府","Kyoto":"京都府","Ōsaka":"大阪府","Osaka":"大阪府",
+    "Shiga":"滋賀県","Kyōto":"京都府","Kyoto":"京都府","Ösaka":"大阪府","Osaka":"大阪府",
     "Hyōgo":"兵庫県","Hyogo":"兵庫県","Nara":"奈良県","Wakayama":"和歌山県","Tottori":"鳥取県",
     "Shimane":"島根県","Okayama":"岡山県","Hiroshima":"広島県","Yamaguchi":"山口県","Tokushima":"徳島県",
     "Kagawa":"香川県","Ehime":"愛媛県","Kōchi":"高知県","Kochi":"高知県","Fukuoka":"福岡県",
@@ -176,9 +176,9 @@ def api_clickpost():
             continue
         a = o.get("shippingAddress") or {}
         items = "／".join(
-            f"{li['node']['title']}×{li['node']['fulfillableQuantity']}"
+            f"{li['node']['title']}×{li['node']['currentQuantity']}"
             for li in o["lineItems"]["edges"]
-            if li["node"]["fulfillableQuantity"] > 0
+            if li["node"]["currentQuantity"] > 0
         )
         if not items:
             continue
@@ -237,13 +237,13 @@ def download_clickpost():
         a = o.get("shippingAddress") or {}
         if o.get("cancelledAt"):
             continue
-        line_items = [li["node"] for li in o["lineItems"]["edges"] if li["node"]["fulfillableQuantity"] > 0]
+        line_items = [li["node"] for li in o["lineItems"]["edges"] if li["node"]["currentQuantity"] > 0]
         if not line_items:
             continue
         if filter_products and not any(li["title"] in filter_products for li in line_items):
             continue
         items = "／".join(
-            f"{li['title']}×{li['fulfillableQuantity']}"
+            f"{li['title']}×{li['currentQuantity']}"
             for li in line_items
         )
         w.writerow([
